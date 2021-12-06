@@ -12,6 +12,7 @@ public class day3{
 
         
         Console.WriteLine("Part1: " + Part1(data));
+        Console.WriteLine("Part1: " + Part2(data));
     }
 
     public static int Part1(List<string> datas){
@@ -53,8 +54,8 @@ public class day3{
 
         return GetDecimal(gamma) * GetDecimal(epsilon);
     }
-    public static int Part2(){
-        return 0;
+    public static int Part2(List <string> datas){
+       return 0;
     }
 
     public static int GetDecimal(string binaryNumber){
