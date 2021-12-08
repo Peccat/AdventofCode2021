@@ -3,11 +3,14 @@ using System;
 public class day3{
     public static void Main(){
         List <string> data = new List <string>();
+        List <string> data2 = new List <string>();
         StreamReader sr = new StreamReader("day3.txt");
         string oneline = "";
 
         while((oneline = sr.ReadLine()) != null){
             data.Add(oneline);
+            data2.Add(oneline);
+            
         }
 
         int[,] BinaryArray = new int[data.Count,((data[0].ToCharArray()).Length)];
@@ -22,7 +25,7 @@ public class day3{
 
         
         Console.WriteLine("Part1: " + Part1(BinaryArray));
-        Console.WriteLine("Part2: " + Part2(data));
+        Console.WriteLine("Part2: " + Part2(data, data2));
     }
 
     public static int Part1(int[,] BinaryArray){
@@ -56,32 +59,74 @@ public class day3{
 
         return GetDecimal(gamma) * GetDecimal(epsilon);
     }
-    public static int Part2( List<string> datas){
+    public static int Part2( List<string> datas, List<string> datas2){
         int ones = 0;
-
+        Console.WriteLine(datas.Count);
+        Console.WriteLine(datas2.Count);
+        
+        //oxygen generator(more bits)
         for(int i = 0; i < 12;i++){ //oszlopok száma
-            for(int j = 0; j < datas.Count; j++){
+            for(int j = 0; j < datas.Count; j++){ //sorok száma
                 if(datas[j][i] == '1'){
                     ones++;
                 }
             }
-            Console.WriteLine(ones);
-            if(ones > datas.Count-1){
-                for(int j = datas.Count-1; j >= 0; j--){
-                    if(datas[j][i] == '1'){
-                        datas.RemoveAt(j);
-                    }
-                }
-            }else{
-                for(int j = datas.Count-1; j >= 0; j--){
+            Console.WriteLine(datas.Count + ":\t" + ones );
+            
+            if(ones >= (datas.Count/2)){
+                for(int j = datas.Count-1; j > -1; j--){
+                    
                     if(datas[j][i] == '0'){
                         datas.RemoveAt(j);
                     }
                 }
-            ones = 0;
+            }else{
+                for(int j = datas.Count-1; j > -1; j--){
+                    
+                    if(datas[j][i] == '1'){
+                        datas.RemoveAt(j);
+                    }
+                }
             }
+            
+            ones = 0;
+            
+            if(datas.Count == 1){break;}
         }
-       return datas.Count;
+
+        //CO2 (lower bits)
+        Console.WriteLine("\nCO2 (" + datas2.Count + ")");
+        for(int i = 0; i < 12;i++){ //oszlopok száma
+            for(int j = 0; j < datas2.Count; j++){ //sorok száma
+                if(datas2[j][i] == '1'){
+                    ones++;
+                }
+            }
+            Console.WriteLine(datas2.Count + ":\t" + ones + "(oszlop: " + (i+1) + ")");
+            
+            if(ones >= (datas2.Count/2)){
+                for(int j = datas2.Count-1; j >= 0; j--){
+                    Console.Write(datas2[j]);
+                    if(datas2[j][i] == '1'){
+                        datas2.RemoveAt(j);
+                        Console.Write(" rm");
+                    }
+                    Console.WriteLine();
+                }
+            }else{
+                for(int j = datas2.Count-1; j >= 0; j--){
+                    Console.Write(datas2[j]);
+                    if(datas2[j][i] == '0'){
+                        datas2.RemoveAt(j);
+                        Console.Write(" rm");
+                    }
+                     Console.WriteLine();
+                }
+            }
+            ones = 0;
+            if(datas2.Count == 1){break;}
+        }
+       return GetDecimal(datas2[0]) * GetDecimal(datas[0]);
     }
 
     public static int GetDecimal(string binaryNumber){
