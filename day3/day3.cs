@@ -53,16 +53,16 @@ public class day3{
             ones = 0;
         }
 
-        Console.WriteLine("gamma\t" + gamma);
-        Console.WriteLine("epsilon\t" + epsilon);
+        //Console.WriteLine("gamma\t" + gamma);
+        //Console.WriteLine("epsilon\t" + epsilon);
 
 
         return GetDecimal(gamma) * GetDecimal(epsilon);
     }
     public static int Part2( List<string> datas, List<string> datas2){
         int ones = 0;
-        Console.WriteLine(datas.Count);
-        Console.WriteLine(datas2.Count);
+        //Console.WriteLine(datas.Count);
+        //Console.WriteLine(datas2.Count);
         
         //oxygen generator(more bits)
         //Console.WriteLine("\nO2 (" + datas.Count + ")");
