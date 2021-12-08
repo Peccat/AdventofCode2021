@@ -65,68 +65,71 @@ public class day3{
         Console.WriteLine(datas2.Count);
         
         //oxygen generator(more bits)
+        //Console.WriteLine("\nO2 (" + datas.Count + ")");
         for(int i = 0; i < 12;i++){ //oszlopok száma
             for(int j = 0; j < datas.Count; j++){ //sorok száma
                 if(datas[j][i] == '1'){
                     ones++;
                 }
             }
-            Console.WriteLine(datas.Count + ":\t" + ones );
+            //Console.WriteLine(datas.Count + ":\t" + ones + "(oszlop: " + (i+1) + ")");
             
-            if(ones >= (datas.Count/2)){
-                for(int j = datas.Count-1; j > -1; j--){
-                    
-                    if(datas[j][i] == '0'){
-                        datas.RemoveAt(j);
-                    }
-                }
-            }else{
-                for(int j = datas.Count-1; j > -1; j--){
-                    
+            if(ones < ((float)datas.Count/2)){
+                for(int j = datas.Count-1; j >= 0; j--){
+                    //Console.Write(datas[j]);
                     if(datas[j][i] == '1'){
                         datas.RemoveAt(j);
+                        //Console.Write(" rm");
                     }
+                    //Console.WriteLine();
+                }
+            }else{
+                for(int j = datas.Count-1; j >= 0; j--){
+                    //Console.Write(datas[j]);
+                    if(datas[j][i] == '0'){
+                        datas.RemoveAt(j);
+                        //Console.Write(" rm");
+                    }
+                     //Console.WriteLine();
                 }
             }
-            
             ones = 0;
-            
             if(datas.Count == 1){break;}
         }
 
         //CO2 (lower bits)
-        Console.WriteLine("\nCO2 (" + datas2.Count + ")");
+        //Console.WriteLine("\nCO2 (" + datas2.Count + ")");
         for(int i = 0; i < 12;i++){ //oszlopok száma
             for(int j = 0; j < datas2.Count; j++){ //sorok száma
                 if(datas2[j][i] == '1'){
                     ones++;
                 }
             }
-            Console.WriteLine(datas2.Count + ":\t" + ones + "(oszlop: " + (i+1) + ")");
+            //Console.WriteLine(datas2.Count + ":\t" + ones + "(oszlop: " + (i+1) + ")");
             
-            if(ones >= (datas2.Count/2)){
+            if(ones >= ((float)datas2.Count/2)){
                 for(int j = datas2.Count-1; j >= 0; j--){
-                    Console.Write(datas2[j]);
+                    //Console.Write(datas2[j]);
                     if(datas2[j][i] == '1'){
                         datas2.RemoveAt(j);
-                        Console.Write(" rm");
+                        //Console.Write(" rm");
                     }
-                    Console.WriteLine();
+                    //Console.WriteLine();
                 }
             }else{
                 for(int j = datas2.Count-1; j >= 0; j--){
-                    Console.Write(datas2[j]);
+                    //Console.Write(datas2[j]);
                     if(datas2[j][i] == '0'){
                         datas2.RemoveAt(j);
-                        Console.Write(" rm");
+                        //Console.Write(" rm");
                     }
-                     Console.WriteLine();
+                     //Console.WriteLine();
                 }
             }
             ones = 0;
             if(datas2.Count == 1){break;}
         }
-       return GetDecimal(datas2[0]) * GetDecimal(datas[0]);
+       return GetDecimal(datas[0]) * GetDecimal(datas2[0]);
     }
 
     public static int GetDecimal(string binaryNumber){
