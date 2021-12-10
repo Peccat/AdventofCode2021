@@ -9,67 +9,158 @@ namespace day_4
     {
         static void Main(string[] args)
         {
+            #region beolvasás
             StreamReader sr = new StreamReader("day4.txt");
             List<string> datas = new List<string>();
             int board = 0;
             int i = 0;
             
+            #region filebeolvasas
             while(!sr.EndOfStream){
                 datas.Add( sr.ReadLine());
-                if(datas[datas.Count-1] == ""){
-                    board ++;
-                };
             }
-
-            //Console.WriteLine(board);
+            #endregion
             
             int[,,] datas3D = new int[100,5,5]; // 100 db 5*5 ös tábla
-            board = 0;
             
-
-            //bingo számok mentése
+            #region bingo szamok mentese
             string[] firstline = datas[0].Split(",");
             List<int> bingos = new List<int>();
 
             for(i = 0; i < firstline.Length; i++){
                 bingos.Add(int.Parse(firstline[i]));
             }
-            //Console.WriteLine(bingos.Count);  //100
+            #endregion
 
-            //táblák felépítése
+            #region tabla felepitese
             int linesin3D = 0;
             for( i = 2; i < datas.Count; i++ ){ //soronként végig megy a datas listán 
-                if((i % 6) == 1 && i > 5){  
+                if((i % 6) == 1 && i > 5){   //ha üres a sor, akkor a tábla számát növeli és a táblán belüli sorszámot nullázza
                     board ++;
                     linesin3D = 0;
-                    Console.WriteLine("\n---" + (board + 1) + ". board---");
+                    //Console.WriteLine("\n---" + (board + 1) + ". board---");
                 }else{
 
-                //végigmegy 1 soron
+                //felvág 1 sort a spacek alapján
                 string[] linehelp = datas[i].Split(' ');
                 List<string> line = new List<string>();
 
+                //string tömbbe átrakás, felesleges space-ek törlése
                 for(int j = 0; j < linehelp.Length; j++){
                     if(linehelp[j] != ""){      //ha üres space van a tömbben, azt nem veszi figyelembe (egyjegyű számok!)
                         line.Add(linehelp[j]);
                     }
                 }
                 
+                //int tömbbe konvertálás a későbbi ellenőrzésekhez
                 for(int j = 0; j < 5; j++){
                     datas3D[board , linesin3D, j] = int.Parse(line[j]);
-                    Console.Write(datas3D[board , linesin3D, j] + " ");   //teszt kiiras
+                    //Console.Write(datas3D[board , linesin3D, j] + " ");   //teszt kiiras
                 }
-                Console.WriteLine(); //soork megmaradjanak
+                //Console.WriteLine(); //sorok megmaradjanak a kiiratáskor
 
-                linesin3D ++;
+                linesin3D ++; //táblán belüli sorok növelése
                 }                
                 
             }
-            
+            #endregion
+            #endregion
+            //Part 1
+            Console.WriteLine("Part1: " + Part1(datas3D, bingos));
         }
 
-        public static int Part1(){
+        public static int Part1(int[,,] datas, List<int> bingos){
+            //Console.WriteLine(datas.Length + " " + datas.GetLength(0) + " " + datas.GetLength(1) + " " + datas.GetLength(2));
+
+            for(int i = 0; i < bingos.Count ; i++){              //bingo számokon végigmegy
+                for(int j = 0; j < datas.GetLength(0); j++){           //táblákon végigmegy
+                    for(int k = 0; k < datas.GetLength(1); k++){         //sorokon megy végig 
+                        for(int l = 0; l < datas.GetLength(2); l++){     // oszlopokon megy végig
+
+                            if(datas[j,k,l] == bingos[i]){  
+                                byte ell = Ellenoriz(i, bingos, j, k, l, datas);
+                                if(ell == 1){ //találat van
+                                    int bingoUnmarkedSum = UnmarkedSum(datas,j,bingos,i); 
+                                    Console.WriteLine("\n" + bingoUnmarkedSum + "*" + (i+1) + "=" + bingoUnmarkedSum * (i+1) );
+                                    return bingoUnmarkedSum * (i+1) ;  //vissza adja a bingo sorszáma és az el nem talált számok összegének szörzatát
+                                }
+                            }
+                        }           
+                    }
+                }
+            }
             return 0;
+        }
+
+        public static byte Ellenoriz(int bingosNumber, List<int> bingos, int tableCount, int Row, int Column, int[,,] datas){  //ellenőrzi az adott oszlopban, sorban a találatokat
+            int columnDetect = 0; //oszlopok találatának száma
+            int rowDetect = 0;    //sorok találatának száma           
+            
+            for(int i = 0; i < 5; i++){ //soron végig megy
+               
+                //Console.WriteLine("Ellenorizben(bingo sorszama: " + bingosNumber + "; tablaszama: " + tableCount + "; sor/oszlopszama: " + i + ")");
+                for(int k = 0; k < 5; k++){ //oszlopon végig megy
+                    columnDetect = 0;
+                    
+                    for(int j = 0; j != bingosNumber+1; j++){  //végig ellenőrzi a bingo számokat
+                        if(datas[tableCount, i, k] == bingos[j]){
+                            columnDetect++;
+                            rowDetect++;
+                            break;
+                        }
+                    }
+                }
+
+                //ha megvan az 5 találat sorban/oszlopban, akkor kilép
+                if(rowDetect == 5){
+                    Console.WriteLine(bingosNumber+ " " + tableCount + " " + Row + " " + Column);
+                    Console.WriteLine("Row: 1");
+                    return 1;   //1-el tér vissza ha a sorban van találat
+                } else if(columnDetect == 5){
+                    Console.WriteLine(bingosNumber+ " " + tableCount + " " + Row + " " + Column);
+                    return 1;   //1-el tér vissza ha az oszlopban van találat
+                    Console.WriteLine("Col: 2");
+                } 
+                
+            }
+            //Console.WriteLine("kilép");
+            return 0;
+        }
+
+        public static int UnmarkedSum(int[,,] datas, int table, List<int> bingos, int bingosNumber){    //összeadja a nem húzott számokat
+            int sum = 0;
+            bool marked = false;
+            
+            Console.WriteLine("UnmarkedSumban");
+
+            for(int i= 0; i < 5; i++){  //pörgeti a sorokat
+                for(int j= 0; j < 5; j++){  //pörgeti az oszlopokat
+                    for(int k = 0; k != bingosNumber+1; k++){    //bingo számokat pörgeti
+                        if(datas[table, i, j] == bingos[k]){
+                            marked = true;
+                            break;
+                        }
+                    }
+                    if(marked == true){     //ha van találat
+                        Console.ForegroundColor = ConsoleColor.Green;
+                        Console.Write("\t" + datas[table, i, j]);
+                        marked = false;
+                    }else{                  //ha nincs találat
+                        sum += datas[table, i, j];
+                        Console.ForegroundColor = ConsoleColor.White;
+                        Console.Write("\t" + datas[table, i, j]);
+                    }
+                    Console.ForegroundColor = ConsoleColor.White;
+                    
+                }   
+                Console.WriteLine();
+            }
+            Console.ForegroundColor = ConsoleColor.White;
+            Console.WriteLine("Tábla: " + (table + 1) + "; bingok sorszama: " + (bingosNumber + 1));
+            for(int i = 0; i != bingosNumber+1; i++){
+                Console.Write(bingos[i] + ",");
+            }
+            return sum;
         }
     }
 }
